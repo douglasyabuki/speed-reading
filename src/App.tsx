@@ -1,4 +1,3 @@
-import "./App.css";
 import { SpeedReading } from "./components/speed-reading";
 import { Layout } from "./layout/layout";
 
