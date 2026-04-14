@@ -11,9 +11,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Phase } from "./speed-reading";
 
 const MIN_WPM = 60;
-const MAX_WPM = 1200;
+const MAX_WPM = 1500;
 const SAMPLE_TEXT =
-  "Speed reading can help you move through text faster while still keeping your attention on the main ideas. Adjust the speed, pause when needed, and restart anytime.";
+  "Average adult silent reading is about 238 words per minute for non-fiction and about 260 for fiction. In normal reading, the eyes jump in quick saccades, pause in short fixations, and sometimes move backward to reread harder parts. Faster readers usually take in more text per fixation and make fewer regressions. Speed-reading works best when you focus on meaning, reduce unnecessary rereading, and process short groups of words instead of sounding out each one. Showing words in one steady position can reduce eye movement and make fast reading feel easier.";
 
 interface SpeedReadingSetup {
   wpm: number;
