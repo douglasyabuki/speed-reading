@@ -1,3 +1,16 @@
+export const getResponsiveBaseFontSize = () => {
+  if (typeof window === "undefined") {
+    return 56;
+  }
+  if (window.innerWidth < 640) {
+    return 24;
+  }
+  if (window.innerWidth < 1024) {
+    return 40;
+  }
+  return 56;
+};
+
 export const normalizeText = (value: string) => {
   return value.replace(/,/g, "").replace(/\s+/g, " ").trim();
 };
