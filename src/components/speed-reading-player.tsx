@@ -3,6 +3,8 @@ import {
   getResponsiveBaseFontSize,
   getWordParts,
 } from "@/utils/speed-reading-utils";
+import { Book, Pause, Pencil, Play, RotateCcw } from "lucide-react";
+import { motion } from "motion/react";
 import {
   useCallback,
   useEffect,
@@ -12,6 +14,7 @@ import {
   useState,
 } from "react";
 import type { Phase } from "./speed-reading";
+import { Button } from "./ui/button";
 
 interface SpeedReadingPlayer {
   words: string[];
@@ -48,6 +51,7 @@ export const SpeedReadingPlayer = ({
   const fullWordRef = useRef<HTMLDivElement | null>(null);
   const beforeRef = useRef<HTMLSpanElement | null>(null);
   const pivotRef = useRef<HTMLSpanElement | null>(null);
+  const readerBoxRef = useRef<HTMLDivElement | null>(null);
 
   const isPlaying = phase === "reading";
   const isFinished = phase === "finished";
@@ -76,6 +80,13 @@ export const SpeedReadingPlayer = ({
       onPhaseChange("reading");
     }
   }, [hasWords, onPhaseChange]);
+
+  // Focus reader when starting or restarting
+  useEffect(() => {
+    if (phase === "reading" && readerBoxRef.current) {
+      readerBoxRef.current.focus();
+    }
+  }, [phase, restartCount]);
 
   useEffect(() => {
     setCurrentIndex(0);
@@ -214,12 +225,12 @@ export const SpeedReadingPlayer = ({
   return (
     <div className="flex min-h-[420px] min-w-0 flex-col rounded-3xl border border-zinc-800 bg-zinc-900/70 p-4 shadow-2xl shadow-black/20 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800 pb-4">
-        <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">
-            Reader
-          </p>
-
-          <p className="mt-1 text-sm text-zinc-300">
+        <div className="flex flex-col items-start gap-2">
+          <div className="flex items-center gap-2 text-zinc-200">
+            <Book className="size-5 text-zinc-500" />
+            <h2 className="font-medium">Reader</h2>
+          </div>
+          <p className="mt-1 text-sm text-zinc-300 tracking-tighter">
             {phase === "idle" && "Ready to begin"}
             {phase === "reading" && "Reading in progress"}
             {phase === "paused" && "Paused"}
@@ -228,39 +239,50 @@ export const SpeedReadingPlayer = ({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <button
+          <Button
             type="button"
             onClick={isPlaying ? pauseReading : resumeReading}
             disabled={!hasWords || isFinished}
             className="inline-flex items-center justify-center rounded-xl border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm font-medium text-zinc-200 transition hover:border-zinc-500 hover:bg-zinc-900 disabled:cursor-not-allowed disabled:opacity-50"
+            title={isPlaying ? "Pause" : "Resume"}
           >
-            {isPlaying ? "Pause" : "Resume"}
-          </button>
+            {isPlaying ? (
+              <Pause className="size-5" />
+            ) : (
+              <Play className="size-5" />
+            )}
+          </Button>
 
-          <button
+          <Button
             type="button"
             onClick={onRestart}
             disabled={!hasWords}
             className="inline-flex items-center justify-center rounded-xl border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm font-medium text-zinc-200 transition hover:border-zinc-500 hover:bg-zinc-900 disabled:cursor-not-allowed disabled:opacity-50"
+            title="Restart"
           >
-            Restart
-          </button>
+            <RotateCcw className="size-5" />
+          </Button>
 
-          <button
+          <Button
             type="button"
             onClick={onStop}
             disabled={phase === "idle"}
             className="inline-flex items-center justify-center rounded-xl border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm font-medium text-zinc-200 transition hover:border-zinc-500 hover:bg-zinc-900 disabled:cursor-not-allowed disabled:opacity-50"
+            title="Edit text"
           >
-            Edit text
-          </button>
+            <Pencil className="size-5" />
+          </Button>
         </div>
       </div>
 
       <div className="flex flex-1 flex-col justify-between gap-6 py-6">
         <div className="flex min-w-0 flex-1 items-center justify-center">
           <div className="w-full max-w-4xl min-w-0">
-            <div className="flex min-h-[220px] min-w-0 items-center justify-center overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-950 px-4 py-8 sm:min-h-[280px] sm:px-8">
+            <div
+              ref={readerBoxRef}
+              tabIndex={-1}
+              className="flex min-h-[220px] min-w-0 items-center justify-center overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-950 px-4 py-8 outline-none sm:min-h-[280px] sm:px-8"
+            >
               {!hasWords && (
                 <p className="text-center text-base text-zinc-500 sm:text-lg">
                   Add some text and start reading.
@@ -324,6 +346,7 @@ export const SpeedReadingPlayer = ({
             </div>
           </div>
         </div>
+        <span className="text-center text-sm text-zinc-300">WPM: {wpm}</span>
 
         <div className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-zinc-300">
@@ -350,9 +373,16 @@ export const SpeedReadingPlayer = ({
           </div>
 
           <div className="h-2 overflow-hidden rounded-full bg-zinc-800">
-            <div
-              className="h-full rounded-full bg-red-500 transition-[width] duration-150"
-              style={{ width: `${progress}%` }}
+            <motion.div
+              className="h-full rounded-full bg-red-500"
+              initial={false}
+              animate={{ width: `${progress}%` }}
+              transition={{
+                type: "spring",
+                stiffness: 120,
+                damping: 20,
+                mass: 0.6,
+              }}
             />
           </div>
 

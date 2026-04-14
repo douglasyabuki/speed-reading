@@ -35,16 +35,18 @@ export const SpeedReading = () => {
   }, []);
 
   return (
-    <section className="grid flex-1 gap-6 lg:grid-cols-[minmax(320px,420px)_minmax(0,1fr)]">
-      <SpeedReadingSetup
-        wpm={wpm}
-        onWpmChange={setWpm}
-        phase={phase}
-        onStart={handleStart}
-        onRestart={handleRestart}
-        hasWords={words.length > 0}
-        onClear={handleClear}
-      />
+    <section className="flex flex-col gap-4 lg:grid flex-1 lg:gap-6 lg:grid-cols-[minmax(320px,420px)_minmax(0,1fr)]">
+      <div>
+        <SpeedReadingSetup
+          wpm={wpm}
+          onWpmChange={setWpm}
+          phase={phase}
+          onStart={handleStart}
+          onRestart={handleRestart}
+          hasWords={words.length > 0}
+          onClear={handleClear}
+        />
+      </div>
 
       <SpeedReadingPlayer
         words={words}
