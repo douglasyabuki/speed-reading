@@ -12,7 +12,9 @@ export const getResponsiveBaseFontSize = () => {
 };
 
 export const normalizeText = (value: string) => {
-  return value.replace(/,/g, "").replace(/\s+/g, " ").trim();
+  // Remove commas as requested by the behavior documentation
+  // but keep other punctuation and whitespace for proper splitting.
+  return value.replace(/,/g, "").trim();
 };
 
 export const splitWords = (value: string) => {
@@ -22,7 +24,10 @@ export const splitWords = (value: string) => {
     return [];
   }
 
-  return normalized.split(" ");
+  // Split by any sequence of whitespace characters.
+  // This ensures words connected by hyphens (-) or underscores (_) 
+  // are NOT split into multiple beats.
+  return normalized.split(/\s+/).filter(Boolean);
 };
 
 export const getPivotIndex = (word: string) => {
